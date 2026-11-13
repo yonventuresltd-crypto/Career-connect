@@ -1,0 +1,68 @@
+services:
+  - type: web
+    name: career-connect-staging
+    runtime: static
+    buildCommand: npm ci && npm run build
+    staticPublishPath: ./dist
+    envVars:
+      - key: VITE_APP_ENV
+        value: staging
+      - key: VITE_SUPABASE_URL
+        sync: false # Staging Supabase project URL only; set in Render Dashboard.
+      - key: VITE_SUPABASE_ANON_KEY
+        sync: false # Staging publishable/anon key only. Never use a service-role key.
+      - key: VITE_ENABLE_REAL_APPLICATIONS
+        value: "false" # Enable only for synthetic staging tests after backend gate is installed.
+      - key: VITE_ENABLE_CV_UPLOADS
+        value: "false" # Enable only for synthetic staging tests after backend gate is installed.
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    headers:
+      - path: /*
+        name: X-Content-Type-Options
+        value: nosniff
+      - path: /*
+        name: X-Frame-Options
+        value: DENY
+      - path: /*
+        name: Referrer-Policy
+        value: strict-origin-when-cross-origin
+      - path: /*
+        name: Permissions-Policy
+        value: camera=(), microphone=(), geolocation=()
+
+  - type: web
+    name: career-connect-production
+    runtime: static
+    buildCommand: npm ci && npm run build
+    staticPublishPath: ./dist
+    envVars:
+      - key: VITE_APP_ENV
+        value: production
+      - key: VITE_SUPABASE_URL
+        sync: false # Production Supabase project URL; must differ from staging.
+      - key: VITE_SUPABASE_ANON_KEY
+        sync: false # Production publishable/anon key only. Never use a service-role key.
+      - key: VITE_ENABLE_REAL_APPLICATIONS
+        value: "false" # Keep closed until owner/security/legal go-live sign-off.
+      - key: VITE_ENABLE_CV_UPLOADS
+        value: "false" # Keep closed until owner/security/legal go-live sign-off.
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    headers:
+      - path: /*
+        name: X-Content-Type-Options
+        value: nosniff
+      - path: /*
+        name: X-Frame-Options
+        value: DENY
+      - path: /*
+        name: Referrer-Policy
+        value: strict-origin-when-cross-origin
+      - path: /*
+        name: Permissions-Policy
+        value: camera=(), microphone=(), geolocation=()
